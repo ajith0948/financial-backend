@@ -10,7 +10,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import statementRoutes from './routes/statements';
 import uploadRoutes from './routes/upload';
-
+c
 // Import our custom modules
 import './queue/pdfWorker';
 import { StatementModel } from './models/Statement.js'; // 👈 Fixed duplicate import
@@ -26,9 +26,12 @@ const port = process.env.PORT || 3000;
 // ==========================================
 // 1. MIDDLEWARE (The Translators & Security)
 // ==========================================
+const allowedOrigin = process.env.FRONTEND_URL;
 app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true
+  origin: allowedOrigin, // This tells the backend: "Trust this Vercel URL"
+  credentials: true,    // This allows cookies/sessions (needed for OAuth)
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 // THIS MUST BE HERE! It translates the React data before the routes see it.
