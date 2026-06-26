@@ -32,6 +32,8 @@ app.use(cors({
   credentials: true,    // This allows cookies/sessions (needed for OAuth)
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
+    origin: process.env.FRONTEND_URL,
+    credentials: true
 }));
 
 // THIS MUST BE HERE! It translates the React data before the routes see it.
