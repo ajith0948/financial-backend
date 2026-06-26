@@ -12,7 +12,7 @@ import statementRoutes from './routes/statements';
 import uploadRoutes from './routes/upload';
 
 // Import our custom modules
-import './queue/PdfWorker.js';
+import './queue/pdfWorker';
 import { StatementModel } from './models/Statement.js'; // 👈 Fixed duplicate import
 import authRouter from './routes/auth.js';
 import folderRoutes from './routes/folders';
