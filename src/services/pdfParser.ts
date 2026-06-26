@@ -1,14 +1,20 @@
-import { PDFParse } from 'pdf-parse';
+import PDFParser from 'pdf2json';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
-// 🛡️ Helper function to extract text cleanly using pdf-parse
+// 🛡️ Helper function to extract text cleanly using pdf2json
 const extractTextFromPDF = async (buffer: Buffer): Promise<string> => {
-    const uint8 = new Uint8Array(buffer);
-    const parser = new PDFParse(uint8);
-    const result = await parser.getText();
-    return result.text;
+    return new Promise((resolve, reject) => {
+        const pdfParser = new PDFParser(null, 1); // 1 = text only mode
+        
+        pdfParser.on("pdfParser_dataError", (errData: any) => reject(errData.parserError));
+        pdfParser.on("pdfParser_dataReady", () => {
+            resolve(pdfParser.getRawTextContent());
+        });
+        
+        pdfParser.parseBuffer(buffer);
+    });
 };
 
 export async function extractFinancialData(fileBuffer: Buffer, customApiKey?: string) {
