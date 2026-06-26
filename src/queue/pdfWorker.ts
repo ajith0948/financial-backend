@@ -2,7 +2,7 @@ import { Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import { StatementModel } from '../models/Statement.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { PDFParse } from 'pdf-parse'; // 👈 Using the correct installed library!
+import PDFParser from 'pdf2json';
 
 // Initialize Gemini with your .env API Key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -22,11 +22,15 @@ export const pdfWorker = new Worker('pdf-parsing-queue', async job => {
         // 1. Decode the base64 file buffer from the queue
         const buffer = Buffer.from(fileBuffer, 'base64');
         
-        // 2. Extract raw text using pdf-parse
-        const uint8 = new Uint8Array(buffer);
-        const pdfParser = new PDFParse(uint8);
-        const result = await pdfParser.getText();
-        const text = result.text;
+        // 2. Extract raw text using pdf2json
+        const text: string = await new Promise((resolve, reject) => {
+            const pdfParser = new PDFParser(null, 1);
+            pdfParser.on("pdfParser_dataError", (errData: any) => reject(errData.parserError));
+            pdfParser.on("pdfParser_dataReady", () => {
+                resolve(pdfParser.getRawTextContent());
+            });
+            pdfParser.parseBuffer(buffer);
+        });
 
         console.log(`🧠 Text extracted from PDF via pdf-parse. Sending payload to Gemini...`);
 

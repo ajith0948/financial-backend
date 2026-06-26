@@ -8,6 +8,9 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 
+# Force a clean install layer for Render caching edge cases
+RUN npm install
+
 # Copy source code
 COPY . .
 
