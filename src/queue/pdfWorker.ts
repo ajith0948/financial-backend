@@ -7,10 +7,10 @@ import PDFParser from 'pdf2json';
 // Initialize Gemini with your .env API Key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-const redisConnection = new IORedis({ 
-    host: 'localhost', 
-    port: 6379, 
-    maxRetriesPerRequest: null 
+const redisConnection = new IORedis({
+    host: process.env.REDIS_HOST || 'localhost', // The crucial fix
+    port: 6379,
+    maxRetriesPerRequest: null
 });
 
 export const pdfWorker = new Worker('pdf-parsing-queue', async job => {

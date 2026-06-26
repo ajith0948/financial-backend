@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # 1. Your existing Redis configuration
   redis:
     image: redis:7-alpine
     container_name: analyzer_queue_redis
@@ -8,6 +9,20 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+
+  # 2. Your Node.js Backend Application
+  api:
+    build: .
+    container_name: financial_analyzer_api
+    ports:
+      - "3000:3000" # Maps port 3000 in the container to 3000 on your machine
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      # NOTE: If you have a .env file, you can also uncomment the line below instead of listing them out:
+      # env_file: .env 
+    depends_on:
+      - redis # Ensures Redis starts BEFORE your backend
 
 volumes:
   redis_data:

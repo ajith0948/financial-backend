@@ -10,7 +10,6 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import statementRoutes from './routes/statements';
 import uploadRoutes from './routes/upload';
-c
 // Import our custom modules
 import './queue/pdfWorker';
 import { StatementModel } from './models/Statement.js'; // 👈 Fixed duplicate import
@@ -28,12 +27,10 @@ const port = process.env.PORT || 3000;
 // ==========================================
 const allowedOrigin = process.env.FRONTEND_URL;
 app.use(cors({
-  origin: allowedOrigin, // This tells the backend: "Trust this Vercel URL"
-  credentials: true,    // This allows cookies/sessions (needed for OAuth)
+  origin: allowedOrigin,
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
-    origin: process.env.FRONTEND_URL,
-    credentials: true
 }));
 
 // THIS MUST BE HERE! It translates the React data before the routes see it.
@@ -64,7 +61,7 @@ mongoose.connect(process.env.MONGO_URI as string)
     .catch((err) => console.error('🚨 MongoDB Connection Error:', err));
 
 const redisConnection = new IORedis({
-    host: 'localhost',
+    host: process.env.REDIS_HOST || 'localhost', // <--- This is the magic fix!
     port: 6379,
     maxRetriesPerRequest: null
 });
